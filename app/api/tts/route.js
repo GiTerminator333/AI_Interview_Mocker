@@ -1,14 +1,25 @@
 import { NextResponse } from "next/server";
+import { checkProStatus } from "../../../utils/proStatus";
 
 export async function POST(request) {
     try {
-        const { text, voice = "troy" } = await request.json();
+        const { text, voice = "troy", email } = await request.json();
 
         if (!text || text.trim().length === 0) {
             return NextResponse.json(
                 { error: "Text is required" },
                 { status: 400 }
             );
+        }
+
+        if (email) {
+            const isPro = await checkProStatus(email);
+            if (!isPro) {
+                return NextResponse.json(
+                    { error: "Pro subscription required for natural AI voices." },
+                    { status: 403 }
+                );
+            }
         }
 
         const apiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
