@@ -201,69 +201,83 @@ function QuestionsSection({ mockInterviewQuestions, activeQuestionIndex }) {
             </div>
 
             {/* Question Text */}
-            <h2 className="my-5 text-md md:text-lg">
+            {/* Question Text */}
+            <h2 className="my-5 text-md md:text-lg font-semibold text-slate-900 dark:text-white">
                 {mockInterviewQuestions[activeQuestionIndex]?.question}
             </h2>
 
             {/* AI Voice Controls */}
-            <div className="flex flex-wrap items-center gap-3 p-3.5 rounded-xl bg-gradient-to-r from-indigo-50/80 via-purple-50/50 to-blue-50/80 border border-indigo-100 mb-5 shadow-sm">
-                {/* Play / Pause / Resume Button */}
-                <button
-                    onClick={handlePlayPause}
-                    disabled={isLoading}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm ${
-                        isLoading
-                            ? 'bg-gray-200 text-gray-500 cursor-wait'
-                            : isSpeaking && !isPaused
-                                ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                                : 'bg-primary hover:bg-primary/90 text-white'
-                    }`}
-                >
-                    {isLoading ? (
-                        <><Loader2 className="h-4 w-4 animate-spin" /> Generating AI Voice...</>
-                    ) : isSpeaking && !isPaused ? (
-                        <><Pause className="h-4 w-4" /> Pause</>
-                    ) : isPaused ? (
-                        <><Play className="h-4 w-4" /> Resume</>
-                    ) : (
-                        <><Volume2 className="h-4 w-4" /> Listen Question</>
-                    )}
-                </button>
-
-                {/* Stop Button */}
-                {(isSpeaking || isPaused) && (
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-6 shadow-2xs transition-all">
+                {/* Left Controls: Play / Pause / Stop */}
+                <div className="flex items-center gap-2">
                     <button
-                        onClick={stopAudio}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-red-200 bg-white/80 text-red-600 hover:bg-red-50 transition-all"
+                        onClick={handlePlayPause}
+                        disabled={isLoading}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-2xs ${
+                            isLoading
+                                ? 'bg-slate-200 dark:bg-slate-800 text-slate-500 cursor-wait'
+                                : isSpeaking && !isPaused
+                                    ? 'bg-amber-500 hover:bg-amber-600 text-white dark:text-slate-950 font-bold'
+                                    : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 text-white'
+                        }`}
                     >
-                        <Square className="h-3.5 w-3.5 fill-current" /> Stop
+                        {isLoading ? (
+                            <><Loader2 className="h-4 w-4 animate-spin" /> Generating Voice...</>
+                        ) : isSpeaking && !isPaused ? (
+                            <><Pause className="h-4 w-4 fill-current" /> Pause</>
+                        ) : isPaused ? (
+                            <><Play className="h-4 w-4 fill-current" /> Resume</>
+                        ) : (
+                            <><Volume2 className="h-4 w-4" /> Listen Question</>
+                        )}
                     </button>
-                )}
 
-                {/* Animated Sound Bars (visible when speaking) */}
-                {isSpeaking && !isPaused && (
-                    <div className="flex items-end gap-[3px] h-4 ml-1">
-                        <div className={`w-[3px] rounded-full animate-[bounce_0.5s_infinite_0.0s] ${isPro ? 'bg-amber-500' : 'bg-indigo-500'}`} style={{ height: '60%' }}></div>
-                        <div className={`w-[3px] rounded-full animate-[bounce_0.5s_infinite_0.15s] ${isPro ? 'bg-amber-500' : 'bg-indigo-500'}`} style={{ height: '100%' }}></div>
-                        <div className={`w-[3px] rounded-full animate-[bounce_0.5s_infinite_0.3s] ${isPro ? 'bg-amber-500' : 'bg-indigo-500'}`} style={{ height: '40%' }}></div>
-                        <div className={`w-[3px] rounded-full animate-[bounce_0.5s_infinite_0.1s] ${isPro ? 'bg-amber-500' : 'bg-indigo-500'}`} style={{ height: '80%' }}></div>
-                        <div className={`w-[3px] rounded-full animate-[bounce_0.5s_infinite_0.25s] ${isPro ? 'bg-amber-500' : 'bg-indigo-500'}`} style={{ height: '55%' }}></div>
+                    {/* Stop Button */}
+                    {(isSpeaking || isPaused) && (
+                        <button
+                            onClick={stopAudio}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-rose-200 dark:border-rose-900/50 bg-white dark:bg-slate-950 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all"
+                        >
+                            <Square className="h-3.5 w-3.5 fill-current" /> Stop
+                        </button>
+                    )}
+                </div>
+
+                {/* Studio Quality Center-Anchored Audio Equalizer Spectrum */}
+                {isSpeaking && !isPaused ? (
+                    <div className="flex-1 flex items-center justify-between gap-[3px] sm:gap-1 h-7 px-3 min-w-[140px] overflow-hidden">
+                        {Array.from({ length: 32 }).map((_, idx) => {
+                            const waveType = idx % 3 === 0 ? "animate-wave-1" : idx % 3 === 1 ? "animate-wave-2" : "animate-wave-3";
+                            const delay = `${((idx * 0.05) % 0.8).toFixed(2)}s`;
+                            return (
+                                <div
+                                    key={idx}
+                                    className={`flex-1 h-6 max-w-[3.5px] min-w-[2px] rounded-full transform origin-center transition-colors ${
+                                        isPro 
+                                            ? 'bg-gradient-to-t from-amber-600 via-amber-400 to-yellow-400 shadow-xs shadow-amber-500/30' 
+                                            : 'bg-gradient-to-t from-slate-800 via-slate-600 to-slate-400 dark:from-slate-400 dark:via-slate-200 dark:to-white'
+                                    } ${waveType}`}
+                                    style={{
+                                        animationDelay: delay
+                                    }}
+                                ></div>
+                            );
+                        })}
                     </div>
+                ) : (
+                    <div className="flex-1 min-w-[10px]"></div>
                 )}
-
-                {/* Separator */}
-                <div className="hidden sm:block h-6 w-px bg-indigo-200 mx-1"></div>
 
                 {/* Voice Selector & Paywall Indicator */}
                 {isPro ? (
                     <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-300 text-amber-800 px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider shadow-2xs">
-                            <Crown className="h-3 w-3 text-amber-600" /> Pro AI Voice
+                        <span className="inline-flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
+                            <Crown className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" /> Pro AI Voice
                         </span>
                         <select
                             value={selectedVoice}
                             onChange={(e) => setSelectedVoice(e.target.value)}
-                            className="bg-white border border-indigo-200 rounded-md px-2.5 py-1.5 text-xs font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-2xs"
+                            className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-md px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-slate-900 dark:focus:ring-white cursor-pointer shadow-2xs"
                         >
                             {VOICES.map((v) => (
                                 <option key={v.id} value={v.id}>{v.label}</option>
@@ -272,13 +286,13 @@ function QuestionsSection({ mockInterviewQuestions, activeQuestionIndex }) {
                     </div>
                 ) : (
                     <div className="flex flex-wrap items-center gap-2">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-gray-100 border border-gray-200 text-gray-600 text-xs font-medium">
-                            <Bot className="h-3.5 w-3.5 text-gray-500" />
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium">
+                            <Bot className="h-3.5 w-3.5 text-slate-500" />
                             <span>Default Robotic Voice (Free)</span>
                         </div>
                         <Link href="/dashboard/upgrade">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white text-xs font-bold shadow-xs transition-all cursor-pointer">
-                                <Lock className="h-3 w-3" /> Unlock Natural AI Voice (Pro)
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold shadow-xs transition-all cursor-pointer">
+                                <Lock className="h-3 w-3" /> Unlock Natural Voice (₹199)
                             </span>
                         </Link>
                     </div>
@@ -286,24 +300,24 @@ function QuestionsSection({ mockInterviewQuestions, activeQuestionIndex }) {
             </div>
 
             {/* Note Box */}
-            <div className="border rounded-lg p-5 bg-blue-50/80 border-blue-200 mt-10">
-                <h2 className="flex gap-2 items-center text-blue-900 font-semibold">
-                    <Lightbulb className="text-blue-600 h-5 w-5" />
-                    <span>How it works:</span>
+            <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 bg-white dark:bg-slate-950 shadow-2xs mt-8">
+                <h2 className="flex gap-2 items-center text-slate-900 dark:text-white font-bold text-sm">
+                    <Lightbulb className="text-amber-500 h-4 w-4 flex-shrink-0" />
+                    <span>Rehearsal Procedure & Protocol:</span>
                 </h2>
-                <p className="text-sm mt-2 text-blue-900 leading-relaxed">
-                    Click on <strong>"Listen Question"</strong> to hear the AI Interviewer read out the prompt, then click <strong>"Record Answer"</strong> to respond.
+                <p className="text-sm mt-1.5 text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Click on <strong>"Listen Question"</strong> to hear your AI verbalize the prompt with simulated interviewer intonation, then select <strong>"Record Answer"</strong> to open your microphone and formulate your spoken defense.
                 </p>
-                <div className="mt-3 pt-3 border-t border-blue-200/60 flex items-center gap-2 text-xs text-blue-800">
+                <div className="mt-3.5 pt-3.5 border-t border-slate-100 dark:border-slate-900 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                     {isPro ? (
                         <>
                             <Sparkles className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                            <span>You are using ultra-realistic neural <strong>Groq Orpheus Pro AI Voices</strong> for your interview session.</span>
+                            <span>You are operating with ultra-realistic neural <strong>Groq Orpheus Pro AI Voices</strong> for standard executive simulation.</span>
                         </>
                     ) : (
                         <>
-                            <Bot className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                            <span>You are listening with the default robotic free browser voice. <Link href="/dashboard/upgrade" className="underline font-bold hover:text-primary">Upgrade to Pro</Link> to unlock life-like neural AI human voices!</span>
+                            <Bot className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                            <span>You are testing with the default robotic free system audio. <Link href="/dashboard/upgrade" className="underline font-semibold hover:text-slate-900 dark:hover:text-white transition-colors">Upgrade to Pro (₹199/mo)</Link> to unlock natural neural speech!</span>
                         </>
                     )}
                 </div>

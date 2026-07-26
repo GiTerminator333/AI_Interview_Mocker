@@ -26,39 +26,55 @@ function Header(){
 
     const navItems = [
         { label: "Dashboard", href: "/dashboard" },
-        { label: "Questions", href: "/dashboard/questions" },
         { label: "Upgrade", href: "/dashboard/upgrade" },
         { label: "How it Works?", href: "/dashboard/learnuse" },
     ];
 
     return (
-        <div className='flex p-4 justify-between bg-secondary shadow-sm'>
-            <Image src={'/logo.svg'} width={160} height={100} alt="logo"></Image>
-            <ul className='hidden md:flex gap-6 items-center'>
-                {navItems.map((item) => (
-                    <li key={item.href}>
-                        <Link
-                            href={item.href}
-                            className={`hover:text-purple-800 hover:text-primary hover:font-bold transition-all cursor-pointer ${
-                                path === item.href ? 'text-purple-800 text-primary font-bold' : ''
-                            } ${item.label === 'Upgrade' ? 'flex items-center gap-1' : ''}`}
-                        >
-                            {item.label === 'Upgrade' && <Crown className="h-4 w-4 text-amber-500" />}
-                            {item.label}
+        <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200/80 dark:border-slate-800 transition-all">
+            <div className="flex px-6 md:px-10 py-3.5 items-center justify-between max-w-7xl mx-auto">
+                <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+                    <Image src={'/logo.png'} width={170} height={50} alt="Mockify Logo" priority className="object-contain" />
+                </Link>
+                <nav>
+                    <ul className="hidden md:flex gap-1.5 items-center bg-slate-50 dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200/80 dark:border-slate-800">
+                        {navItems.map((item) => {
+                            const isActive = path === item.href;
+                            return (
+                                <li key={item.href}>
+                                    <Link
+                                        href={item.href}
+                                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                            isActive
+                                                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-semibold'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800/60'
+                                        }`}
+                                    >
+                                        {item.label === 'Upgrade' && <Crown className="h-3.5 w-3.5 text-amber-500" />}
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </nav>
+                <div className="flex items-center gap-4">
+                    {isPro ? (
+                        <span className="inline-flex items-center gap-1.5 bg-slate-900 dark:bg-slate-800 text-amber-400 border border-slate-700 dark:border-slate-700 px-3 py-1 rounded-md text-xs font-semibold tracking-wide">
+                            <Crown className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> PRO MEMBER
+                        </span>
+                    ) : (
+                        <Link href="/dashboard/upgrade" className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 text-white px-3.5 py-1.5 rounded-md transition-colors shadow-xs">
+                            <Crown className="h-3.5 w-3.5 text-amber-400" /> Upgrade Pro
                         </Link>
-                    </li>
-                ))}
-            </ul>
-            <div className="flex items-center gap-3">
-                {isPro && (
-                    <span className="hidden md:inline-flex items-center gap-1 bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-300 text-amber-700 px-2.5 py-1 rounded-full text-xs font-bold">
-                        <Crown className="h-3 w-3" /> PRO
-                    </span>
-                )}
-                <UserButton></UserButton>
+                    )}
+                    <div className="pl-2 border-l border-slate-200 dark:border-slate-800">
+                        <UserButton afterSignOutUrl="/" />
+                    </div>
+                </div>
             </div>
-        </div>
-    )
+        </header>
+    );
 }
 
 export default Header
